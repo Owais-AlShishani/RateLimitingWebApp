@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using RateLimitingWebApp.Models;
 
 namespace RateLimitingWebApp.Controllers
 {
@@ -11,11 +13,11 @@ namespace RateLimitingWebApp.Controllers
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IOptionsSnapshot<RateLimitingSettings> _options;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(IOptionsSnapshot<RateLimitingSettings> options)
         {
-            _logger = logger;
+            _options = options;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -28,6 +30,11 @@ namespace RateLimitingWebApp.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+        [HttpGet("/GetSettings")]
+        public IActionResult GetRateLimitingSettings()
+        {
+            return Ok(_options.Value);
         }
     }
 }
